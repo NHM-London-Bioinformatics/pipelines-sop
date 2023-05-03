@@ -32,7 +32,7 @@ When you are ready to run a pipeline, we suggest the following:
 
 ## Profiles and cache
 
-You don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the NHM nextflow profile and the singularity cache
+You don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow profile](profiles.md) and the [singularity cache](singularity_cache.md)
 
 # Pipelines
 
