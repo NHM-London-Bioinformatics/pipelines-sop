@@ -49,14 +49,14 @@ By default, these commands skip the majority of the downstream analysis that amp
 ```
 The only only post processing done is taxonomic collapsing; however, if you don't want this, you could replace the above line with the following:
 ```
---skip_qiime --skip_ancom
+--skip_diversity_indices --skip_qiime --skip_ancom
 ```
 
 #### Run time (`-profile`)
 These commands use the `hour` queue on the HPC and can generally process a MiSeq's worth of metabarcoding without running out of time. If your runs are failing with out of time errors, you could use `genericcpuday` instead of `genericcpuhour`. Remember, each individual process is run on the `hour` queue - adding up all of these individual processes, the overall run time of the pipeline may be much longer.
 
 
-# 16S
+### 16S
 
 ```
 nextflow run nf-core/ampliseq -r <version> \
@@ -67,11 +67,11 @@ nextflow run nf-core/ampliseq -r <version> \
   --input </path/to/samplesheet.tsv> \
   --FW_primer <FORSEQ> \
   --RV_primer <REVSEQ> \
+  --cutadapt_min_overlap 3 \
   --trunclenf <FTRUNC> \
   --trunclenr <RTRUNC> \
-  --cutadapt_min_overlap 3 \
-  --min_frequency 2 \
   --max_ee 1 \
+  --min_frequency 2 \
   --dada_ref_taxonomy "silva=138" \
   --cut_dada_ref_taxonomy \
   --exclude_taxa "mitochondria,chloroplast" \
@@ -82,7 +82,7 @@ nextflow run nf-core/ampliseq -r <version> \
 Notes:
 * Add `--filter_ssu "bac"` if you're only interested in bacteria, or `--filter_ssu "bac,arc"` for bacteria and archaea. See [above](#taxonomic-and-location-filtering)
 
-# 18S
+### 18S
 
 ```
 nextflow run nf-core/ampliseq -r <version> \
@@ -93,18 +93,18 @@ nextflow run nf-core/ampliseq -r <version> \
   --input </path/to/samplesheet.tsv> \
   --FW_primer <FORSEQ> \
   --RV_primer <REVSEQ> \
+  --cutadapt_min_overlap 3 \
   --trunclenf <FTRUNC> \
   --trunclenr <RTRUNC> \
-  --cutadapt_min_overlap 3 \
-  --min_frequency 2 \
   --max_ee 1 \
+  --min_frequency 2 \
   --dada_ref_taxonomy "pr2=4.14.0" \
   --cut_dada_ref_taxonomy \
   --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
   --email <you@nhm.ac.uk>
 ```
 
-# 18S
+### ITS
 
 ```
 nextflow run nf-core/ampliseq -r <version> \
@@ -113,27 +113,57 @@ nextflow run nf-core/ampliseq -r <version> \
   -w work \
   --outdir out \
   --input </path/to/samplesheet.tsv> \
+  --illumina_pe_its \
   --FW_primer <FORSEQ> \
   --RV_primer <REVSEQ> \
+  --cutadapt_min_overlap 3 \
   --trunclenf <FTRUNC> \
   --trunclenr <RTRUNC> \
-  --cutadapt_min_overlap 3 \
-  --min_frequency 2 \
   --max_ee 1 \
-  --dada_ref_taxonomy "pr2=4.14.0" \
+  --cut_its <"full"/"its1"/"its2"> \
+  --min_frequency 2 \
+  --dada_ref_taxonomy "unite-alleuk=8.3" \
   --cut_dada_ref_taxonomy \
   --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
   --email <you@nhm.ac.uk>
 ```
 
+Note: we recommend using `--cut_its` for ITS, which runs ITSx on your ASVS, filtering out non-ITS sequences and optionally retaining only parts of the ITS regions. If your primers amplify only ITS1 or ITS2, specifying "its1" or "its2" respectively will return only those regions, trimming off other sequence data. If you use "full", ITSx will be run and filter out non-ITS sequences, but no trimming will be run.
 
+### COX1
 
+```
+nextflow run nf-core/ampliseq -r <version> \
+  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
+  -profile genericcpuhour,singularity \
+  -w work \
+  --outdir out \
+  --input </path/to/samplesheet.tsv> \
+  --illumina_pe_its \
+  --FW_primer <FORSEQ> \
+  --RV_primer <REVSEQ> \
+  --cutadapt_min_overlap 3 \
+  --trunclenf <FTRUNC> \
+  --trunclenr <RTRUNC> \
+  --max_ee 1 \
+  --min_frequency 2 \
+  --min_len_asv <MINEXPLENGTH> \
+  --max_len_asv <MAXEXPLENGTH> \
+  --dada_ref_taxonomy "midori2-co1" \
+  --cut_dada_ref_taxonomy \
+  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
+  --email <you@nhm.ac.uk>
+```
 
+Note: as COX1 is a protein-coding gene, we can apply a strict length filter (`--min_len_asv`, `--max_len_asv`) as we don't expect valid ASVs to vary much. Note that you may wish to apply further filtering not currently available in ampliseq, such as translation filtering and removal of out-of-frame length variants. 
 
+## Outputs
 
+For complete documentation of all the outputs, see [here](https://nf-co.re/ampliseq/output). Here is a highlight set of outputs
 
-
-
-
-
-
+* QC reports are in `multiqc/multiqc_report.html`
+* ASVs (before `--exclude_taxa`) are in `dada2/ASV_seqs.fasta`
+* Taxonomy with species is in `dada2/ASV_tax_species.tsv`
+* Raw read counts are in `dada2/DADA2_table.tsv`
+* Taxonomic filtered ASVs are in `qiime2/representative_sequences/rep-seq.fasta`
+* Taxnomically collapsed read count tables are in `qiime2/abundance_tables/`
