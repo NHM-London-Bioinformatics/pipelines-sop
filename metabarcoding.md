@@ -14,7 +14,7 @@ Once you have these, you need to prepare a samplesheet. See the [ampliseq sample
 
 ### Samplesheet
 
-The [samplesheet](https://nf-co.re/ampliseq/2.5.0/usage#samplesheet-input) is a table recording the file paths of all of your reads. This table must be saved as a tab-separated values (TSV) text file (also known as tab delimited table). You can create this table and save it as TSV in [Microsoft Excel](https://smallbusiness.chron.com/make-txt-tab-delimited-35511.html), [LibreOffice Calc](https://ask.libreoffice.org/t/how-to-generate-calc-tab-delimited-output/14591) or [Google Sheets](https://support.google.com/merchants/answer/160569?hl=en-GB). 
+
 
 
 
