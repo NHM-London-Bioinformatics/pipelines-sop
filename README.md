@@ -27,6 +27,8 @@ When you are ready to run a pipeline, we suggest the following:
 
 * Always run a pipeline for a specific set of data in its own working directory. While nextflow does most of its work in a `work` directory that you specify, it also creates a `.nextflow` and `.nextflow.log` files in the current working directory, and there's a chance these may clash if you have two different nextflow pipelines running in the same working directory.
 * Always run a pipeline using `screen`. *Nextflow dispatches slurm jobs for you* while the main program continues running and reporting progress, but it can take from hours to days for a pipeline to complete so being able to close the screen and leave the pipeline running is invaluable.
+* Always specify a version when you run a pipeline. When you want to compare a new run to a previous dataset, use the same version as the previous dataset. Otherwise, we generally recommend running the most recent stable version: if you're not sure what that is, head to the documentation for that pipeline and it will say on the main page.
+* Always keep your own record of the exact command you run, so that you can replicate the analysis either with the same or new data.
 
 ## Profiles and cache
 
@@ -36,7 +38,7 @@ You don't need to understand profiles and caching to get started, but if you wan
 
 ## Metabarcoding
 
-We have extensively tested the nf-core ampliseq pipeline for metabarcoding. Click here to read more about ampliseq.
+We have extensively tested the [nf-core ampliseq](https://nf-co.re/ampliseq) pipeline for metabarcoding. [Click here](metabarcoding.md) to read our guide to running ampliseq on the NHM HPC.
 
 ## Ancient DNA
 
