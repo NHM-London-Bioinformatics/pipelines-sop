@@ -31,13 +31,15 @@ If you have raw demultiplexed reads files, you should know the paths for these f
 
 Once you have all of the above information, you need to prepare a samplesheet. See the [eager samplesheet documentation](https://nf-co.re/eager/usage#tsv-input-method) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file. Note that if you have a single library, or a set of libraries all prepared the same way, you could use the the direct input method, but we don't recommend it - a samplesheet keeps a better record and simplifies the input command.
 
+If you're doing Metagenomic Profiling, you will also need a Kraken or Malt database for classification, and know the path to this. This is supplied as its own argument.
+
 ## Commands
 
 Before you run eager, remember to open a `screen` and activate the nextflow conda environment:
 ```
 conda activate nextflow
 ```
-Below is a set o starter command for running eager on a set of libraries. Before you run any of these commands, you should check over the parameters, reviewing the [eager documentation](https://nf-co.re/eager/parameters). Several parameters will require you to fill in project-specific information - some of these are obvious, more information is given for some below. Other parameters have default information already filled in, you should consider whether these are the best options for your project. 
+Below are starter commands for running eager on a set of libraries for each of the three pathways. Before you run any of these commands, you should check over the parameters, reviewing the [eager documentation](https://nf-co.re/eager/parameters). Several parameters will require you to fill in project-specific information - some of these are obvious, more information is given for some below. Other parameters have default information already filled in, you should consider whether these are the best options for your project. 
 
 #### Reference
 If your reference is one of the iGenomes and it's supported by Eager, simply input its as the value for `--genome` in place of `<iGenomeID>` in the command. Otherwise, you should remove the `--genome` line and instead add the following lines:
@@ -47,7 +49,15 @@ If your reference is one of the iGenomes and it's supported by Eager, simply inp
 ```
 As always, replace the value in `<>` with the path, removing the `<>`.
 
-### Command
+#### Alignment
+
+The commands below follow the eager suggestions for aligners, namely they use the default BWA aln method for the Eukaryotic Nuclear Genome and Metagenomic Profiling pathways, and CircularMapper for Microbial or Organell Genome pathway, but there are several others available. You can change the mapper used, as well as configure the mapper: check out [this section](https://nf-co.re/eager/parameters#read-mapping-to-reference-genome) of the eager documentation.
+
+#### Genotyping
+
+The commands below use the default GATK UnifiedGenotyper ('ug') option for genotyping, but others are available. You can change the genotyper used, as well as configure the genotyper: check out [this section](https://nf-co.re/eager/parameters#genotyping) of the eager documentation.
+
+### Eukaryotic Nuclear Genome
 
 ```
 nextflow run nf-core/eager -r <version> \
@@ -57,120 +67,36 @@ nextflow run nf-core/eager -r <version> \
   -w work \
   --outdir out \
   --input </path/to/samplesheet.tsv> \
-  --genome <iGenomeID>
-  --run_genotyping \
+  --genome <iGenomeID> \
+  --mapper bwaaln \
   --genotyping_tool 'ug' \
-  --write_allele_frequencies \
-  --run_sexdeterrmine \
-  --run_nuclear_contamination \
   --run_mtnucratio \
-  --email t.creedy@nhm.ac.uk
-
-nextflow run nf-core/ampliseq -r <version> \
-  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "silva=138" \
-  --cut_dada_ref_taxonomy \
-  --exclude_taxa "mitochondria,chloroplast" \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
+  --run_bcftools_stats \
   --email <you@nhm.ac.uk>
 ```
 
-Notes:
-* Add `--filter_ssu "bac"` if you're only interested in bacteria, or `--filter_ssu "bac,arc"` for bacteria and archaea. See [above](#taxonomic-and-location-filtering)
+Note: if you're running on humans, you may also want to add [`--run_sexdeterrmine`](https://nf-co.re/eager/parameters#human-sex-determination) and [`--run_nuclear_contamination`](https://nf-co.re/eager/parameters#human-sex-determination), both options only available with human sequencing. 
 
-### 18S
+### Microbial or Organelle Genome
+Note that we haven't specifically tested eager with this sort of data, but this should be a good starting point.
 
 ```
-nextflow run nf-core/ampliseq -r <version> \
+nextflow run nf-core/eager -r <version> \
   -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
+  -c /mbl/share/workspaces/groups/nextflow/configs/eager.config \
+  -profile singularity \
   -w work \
   --outdir out \
   --input </path/to/samplesheet.tsv> \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "pr2=4.14.0" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
+  --genome <iGenomeID> \
+  --mapper circularmapper \
+  --metagenomic_tool 'kraken' \
+  --database </path/to/classifer_database> \
   --email <you@nhm.ac.uk>
 ```
+Note that MALT is also supported for taxonomic classification, see [here](https://nf-co.re/eager/parameters#metagenomic-screening)
 
-### ITS
-
-```
-nextflow run nf-core/ampliseq -r <version> \
-  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --illumina_pe_its \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --cut_its <"full"/"its1"/"its2"> \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "unite-alleuk=8.3" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
-```
-
-Note: we recommend using `--cut_its` for ITS, which runs ITSx on your ASVS, filtering out non-ITS sequences and optionally retaining only parts of the ITS regions. If your primers amplify only ITS1 or ITS2, specifying "its1" or "its2" respectively will return only those regions, trimming off other sequence data. If you use "full", ITSx will be run and filter out non-ITS sequences, but no trimming will be run.
-
-### COX1
-
-```
-nextflow run nf-core/ampliseq -r <version> \
-  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --illumina_pe_its \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --min_len_asv <MINEXPLENGTH> \
-  --max_len_asv <MAXEXPLENGTH> \
-  --dada_ref_taxonomy "midori2-co1" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
-```
-
-Note: as COX1 is a protein-coding gene, we can apply a strict length filter (`--min_len_asv`, `--max_len_asv`) as we don't expect valid ASVs to vary much. Note that you may wish to apply further filtering not currently available in ampliseq, such as translation filtering and removal of out-of-frame length variants. 
 
 ## Outputs
 
-For complete documentation of all the outputs, see [here](https://nf-co.re/ampliseq/output). Here is a highlight set of outputs
-
-* QC reports are in `multiqc/multiqc_report.html`
-* ASVs (before `--exclude_taxa`) are in `dada2/ASV_seqs.fasta`
-* Taxonomy with species is in `dada2/ASV_tax_species.tsv`
-* Raw read counts are in `dada2/DADA2_table.tsv`
-* Taxonomic filtered ASVs are in `qiime2/representative_sequences/rep-seq.fasta`
-* Taxnomically collapsed read count tables are in `qiime2/abundance_tables/`
+For complete documentation of all the outputs, see [here](https://nf-co.re/eager/output). We strongly recommend you check out the MultiQC report (`multiqc/multiqc_report.html`) first - it has detailed summaries of the results of mapping and downstream analyses and is a really handy one-stop overview of the run. Otherwise, the output directory is pretty intuitive and you can find the outputs from each tool in the relevant named folder.
