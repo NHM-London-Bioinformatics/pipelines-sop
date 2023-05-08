@@ -2,67 +2,70 @@
 
 We have extensively tested the [nf-core eager](https://nf-co.re/eager) pipeline and validated its efficacy with published NHM aDNA data. Here we give a brief overview of getting started with the pipeline and some commands for different barcode sequences. The [ampliseq documentation](https://nf-co.re/ampliseq/usage) is very good and you should review it alongside this guide.
 
-Eager has a range of analysis pathways. Make sure you check out what these are at the eager documentation before starting, so you know exactly what you want to do. This documentation is based on the "Eukaryotic Nuclear Genome" pathway, as this is the most comprehensive and encompasses most steps of the other pathways, and hence it will largely apply for any pathway
+Eager has a range of analysis pathways. Make sure you check out what these are at the eager documentation before starting, so you know exactly what you want to do. This documentation is based on the "Eukaryotic Nuclear Genome" pathway, as this is the most comprehensive and encompasses most steps of the other pathways, and hence it will largely apply for any pathway. The most important distinction is that the "Eukayotic Nuclear Genome" and "Microbial or Organelle Genome" pathways focus on samples of a single species, for which the "reference" should be a genome for this species, while the 
+
+Each run of eager is based on a single reference species or host species - if you have samples of multiple species or multiple hosts, you should run eager separately for each. However, each run encompass multiple individual samples of the target species/host, as well as multiple libries sequenced and prepared in different ways of each sample. Eager will merge data from different sequence runs, libraries and samples at appropriate points in the pipeline, running different analyses at different, appropriate levels of merging. You can see an illustration of this [here](https://nf-co.re/eager/usage#tsv-input-method). Thus we recommend running eager once with many samples, rather than separately with different samples.
 
 ## Getting started
 
 First, check our [top tips for running a pipeline](README.md#top-tips-for-running-a-pipeline)
 
+### References
 
+Second, decide on your reference genome - either the species of interest, or the host species. 
 
+If your reference genome is one of the [iGenomes](https://emea.support.illumina.com/sequencing/sequencing_software/igenome.html), check to see if it's already available directly in Eager by checking [this file](https://github.com/nf-core/eager/blob/2.4.6/conf/igenomes.config). The supported genomes are those that are listed as 'titles' of each section, followed by a list of file paths: e.g. the first two are 'GRCh37' and 'GRCh38'. If your reference genome is in iGenomes and supported by Eager, great, you don't need to do anything else. 
 
+If not, you simply need to make sure you have a fasta of the reference genome. If it doesn't come with an index, you should index it using `samtools faidx <reference.fasta>`, replacing `<reference.fasta>` with the name of the file. Once you have both the fasta and the index, ensure that the index has the same name as the uncompressed reference, with `.fai` at the end. For example if your reference is called `ref.fasta`, your index should be called `ref.fasta.fai`. If your reference is compressed, e.g. `ref.fasta.gz`, your index should still be called `ref.fasta.fai`. You should also make sure the modification date of the index is after that of the reference, you can do this by running `touch <ref.fasta.fai>`, replacing <ref.fasta.fai> with the name of the index file.
 
-1. The forward and reverse primers used to amplify your target region. These should not include any index or adapter sequences (aka "overhang")
-2. The length of your reads (e.g. 300bp, 250bp, etc)
-3. The location of your demultiplexed reads files. Each pair of files should correspond to a single sample or replicate.
+### Sample information
 
-Once you have these, you need to prepare a samplesheet. See the [ampliseq samplesheet documentation](https://nf-co.re/ampliseq/2.5.0/usage#samplesheet-input) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file.
+Finally, ensure you have the following information for each library
+
+1. The colour chemistry - this is just a matter of knowing what sequencer was used for each library, '2' for NextSeq or NovaSeq, '4' for HiSeq or MiSeq
+2. The sequence type - 'PE' or 'SE'
+3. The strandedness of the DNA sequenced - 'double' or 'single'
+4. The UDG treatment - 'full', 'part' or 'none'
+
+If you have raw demultiplexed reads files, you should know the paths for these fastq files. Alternatively, if you've already mapped against your reference, you can use BAM files as your input, and you should know the paths to these files. 
+
+Once you have all of the above information, you need to prepare a samplesheet. See the [eager samplesheet documentation](https://nf-co.re/eager/usage#tsv-input-method) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file. Note that if you have a single library, or a set of libraries all prepared the same way, you could use the the direct input method, but we don't recommend it - a samplesheet keeps a better record and simplifies the input command.
 
 ## Commands
 
-Before you run ampliseq, remember to open a `screen` and activate the nextflow conda environment:
+Before you run eager, remember to open a `screen` and activate the nextflow conda environment:
 ```
 conda activate nextflow
 ```
-Below are starting commands for running ampliseq for four different markers. Before you run any of these commands, you should check over the parameters, reviewing the [ampliseq documentation](https://nf-co.re/ampliseq/parameters). Several parameters will require you to fill in project-specific information - some of these are obvious, more information is given for some below. Other parameters have default information already filled in, you should consider whether these are the best options for your project. 
+Below is a set o starter command for running eager on a set of libraries. Before you run any of these commands, you should check over the parameters, reviewing the [eager documentation](https://nf-co.re/eager/parameters). Several parameters will require you to fill in project-specific information - some of these are obvious, more information is given for some below. Other parameters have default information already filled in, you should consider whether these are the best options for your project. 
 
-#### `--trunclenf` / `--trunclenr`
-The conservative approach is to set these to one less than your read length, i.e. `--trunclenf 249` and `--trunclenr 249` for 2x250 reads. If your sequencing is not ideal and this removes too many reads, you could instead set this to a lower value, remembering that you need to leave enough read length left for merging!
-
-#### `--cutadapt_min_overlap`
-This sets the minimum length of primer sequence to match for primers to be removed and the read retained. This should never be less than 3, and where primers are self-complementary at the ends, should be increased. Review the beginning and end of each of your primer sequences and if they overlap, set this to one greater than the maximum number of overlapping bases for either of your primers. For example, the primer sequence `CGGTAAYTCCAGCTCYV` overlaps with itself by 3 bases since the ambiguities `Y` and `V` both include `G`:
+#### Reference
+If your reference is one of the iGenomes and it's supported by Eager, simply input its as the value for `--genome` in place of `<iGenomeID>` in the command. Otherwise, you should remove the `--genome` line and instead add the following lines:
 ```
-CGGTAAYTCCAGCTCYV
-              CGGTAAYTCCAGCTCYV
+--fasta </path/to/ref.fasta.gz> \
+--fasta_index </path/to/ref.fasta.fai> \
 ```
-Assuming the other primer overlaps by 3 or fewer bases, runs including this primer should be set to `--cutadapt_min_overlap 4`
+As always, replace the value in `<>` with the path, removing the `<>`.
 
-#### `-w` / `--outdir`
-We recommend running ampliseq in its own working directory, so by default these arguments are set to generic directory names. Change as desired
-
-#### Taxonomic and location filtering
-Ampliseq has two ways to filter out ASVs from non-target taxa or genetic compartments. Firstly, for 16S and 18S only, ampliseq can use barrnap to check ASVs are in one or more taxa and/or compartments. Use [`--filter_ssu`](https://nf-co.re/ampliseq/parameters#filter_ssu) to specify kingdoms and or compartments - any ASVs in the specified taxa/compartments will be kept. Secondly, for any marker, after taxonomic assignment ampliseq can filter *out* specified compartments and/or any arbitrary taxonomic levels using [`--exclude_taxa`](https://nf-co.re/ampliseq/parameters#exclude_taxa). Note that the default for `--exclude_taxa` removes mitochondrial sequences, so make sure that if no other filter is set, `"none"` is sepecified if running on COX1.
-
-#### Quality and abundance filtering
-Our recommended quality filter (`--max_ee 1`) is strict, allowing on average no errors in a read. Conversely, our recommended abundance filter (`--min_frequency 1`) is relatively liberal, removing ASVs that only have a single read but allowing any other very rare ASVs to remain. The thinking here is that on inspecting the read tables, you can always further filter ASVs by abundance, and we strongly encourage this.
-
-#### Post ASV processing
-By default, these commands skip the majority of the downstream analysis that ampliseq can do, apart from taxonomic assignment, expecting that you'd rather do this yourself. This is done with the following line:
-```
---skip_diversity_indices --skip_barplot --skip_alpha_rarefaction --skip_ancom
-```
-The only only post processing done is taxonomic collapsing; however, if you don't want this, you could replace the above line with the following:
-```
---skip_diversity_indices --skip_qiime --skip_ancom
-```
-
-#### Run time (`-profile`)
-These commands use the `hour` queue on the HPC and can generally process a MiSeq's worth of metabarcoding without running out of time. If your runs are failing with out of time errors, you could use `genericcpuday` instead of `genericcpuhour`. Remember, each individual process is run on the `hour` queue - adding up all of these individual processes, the overall run time of the pipeline may be much longer.
-
-
-### 16S
+### Command
 
 ```
+nextflow run nf-core/eager -r <version> \
+  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
+  -c /mbl/share/workspaces/groups/nextflow/configs/eager.config \
+  -profile singularity \
+  -w work \
+  --outdir out \
+  --input </path/to/samplesheet.tsv> \
+  --genome <iGenomeID>
+  --run_genotyping \
+  --genotyping_tool 'ug' \
+  --write_allele_frequencies \
+  --run_sexdeterrmine \
+  --run_nuclear_contamination \
+  --run_mtnucratio \
+  --email t.creedy@nhm.ac.uk
+
 nextflow run nf-core/ampliseq -r <version> \
   -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
   -profile genericcpuhour,singularity \
