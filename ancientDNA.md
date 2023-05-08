@@ -41,6 +41,10 @@ conda activate nextflow
 ```
 Below are starter commands for running eager on a set of libraries for each of the three pathways. Before you run any of these commands, you should check over the parameters, reviewing the [eager documentation](https://nf-co.re/eager/parameters). Several parameters will require you to fill in project-specific information - some of these are obvious, more information is given for some below. Other parameters have default information already filled in, you should consider whether these are the best options for your project. 
 
+#### Configuration
+
+We have written a configuration file to optimise the running of eager on the NHM HPC, included in the commands below. For more information about what this configuration file does, see the [configs documentation](configs.md).
+
 #### Reference
 If your reference is one of the iGenomes and it's supported by Eager, simply input its as the value for `--genome` in place of `<iGenomeID>` in the command. Otherwise, you should remove the `--genome` line and instead add the following lines:
 ```
@@ -49,9 +53,9 @@ If your reference is one of the iGenomes and it's supported by Eager, simply inp
 ```
 As always, replace the value in `<>` with the path, removing the `<>`.
 
-#### Alignment
+#### Mapping
 
-The commands below follow the eager suggestions for aligners, namely they use the default BWA aln method for the Eukaryotic Nuclear Genome and Metagenomic Profiling pathways, and CircularMapper for Microbial or Organell Genome pathway, but there are several others available. You can change the mapper used, as well as configure the mapper: check out [this section](https://nf-co.re/eager/parameters#read-mapping-to-reference-genome) of the eager documentation.
+The commands below follow the eager suggestions for mapping, namely they use the default BWA aln method for the Eukaryotic Nuclear Genome and Metagenomic Profiling pathways, and CircularMapper for Microbial or Organell Genome pathway, but there are several others available. You can change the mapper used, as well as configure the mapper: check out [this section](https://nf-co.re/eager/parameters#read-mapping-to-reference-genome) of the eager documentation.
 
 #### Genotyping
 
