@@ -34,7 +34,7 @@ When you are ready to run a pipeline, we suggest the following:
 
 ## Queue selection and other configurations
 
-We have written a configuration file that optimises how nextflow runs on the NHM HPC, including dispatching jobs with slurm. The main thing to remember is that this allows us to specify which slurm queue to run with. For ampliseq, this is done by the user, and by default we use the `hour` queue but this is easily changed - see the [metabarcoding page](metabarcoding.md) for more information. For eager, this is done automatically by a secondary configuration file - see the aDNA page for more information (coming soon). Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow profile](profiles.md) and the [singularity cache](singularity_cache.md)
+We have written a configuration file that optimises how nextflow runs on the NHM HPC, including dispatching jobs with slurm. The main thing to remember is that this allows us to specify which slurm queue to run with. For ampliseq, this is done by the user, and by default we use the `hour` queue but this is easily changed - see the [metabarcoding page](metabarcoding.md) for more information. For eager, this is done automatically by a secondary configuration file - see the [aDNA](ancientDNA.md) page for more information. Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow configs and profiles](configs.md) and the [singularity cache](singularity_cache.md)
 
 # Pipelines
 
@@ -44,7 +44,7 @@ We have extensively tested the [nf-core ampliseq](https://nf-co.re/ampliseq) pip
 
 ## Ancient DNA
 
-We are in the process of extensively testing the nf-core eager pipeline for aDNA bioinformatics. Watch this space.
+We have extensively tested the [nf-core eager](https://nf-co.re/eager) pipeline for ancient DNA analysis. [Click here](ancientDNA.md) to read our guide to running eager on the NHM HPC.
 
 ## Genome Skimming
 
