@@ -1,6 +1,6 @@
 # Guidelines for running nf-core pipelines on the NHM HPC
 
-This repo comprises guidelines and Standard Operating Procedures for running [https://nf-co.re/](nf-core) nextflow bioinformatic pipelines on the NHM HPC cluster. It is designed to augment, not replace the comprehensive documentation available on the nf-core webpages for each pipeline. 
+This repo comprises guidelines and Standard Operating Procedures for running [nf-core](https://nf-co.re/) nextflow bioinformatic pipelines on the NHM HPC cluster. It is designed to augment, not replace the comprehensive documentation available on the nf-core webpages for each pipeline. 
 
 These guidelines assume that you have:
 * Access to the NHM HPC
