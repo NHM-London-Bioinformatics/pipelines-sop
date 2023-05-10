@@ -37,7 +37,7 @@ Assuming the other primer overlaps by 3 or fewer bases, runs including this prim
 We recommend running ampliseq in its own working directory, so by default these arguments are set to generic directory names. Change as desired
 
 #### Taxonomic and location filtering
-Ampliseq has two ways to filter out ASVs from non-target taxa or genetic compartments. Firstly, for 16S and 18S only, ampliseq can use barrnap to check ASVs are in one or more taxa and/or compartments. Use [`--filter_ssu`](https://nf-co.re/ampliseq/parameters#filter_ssu) to specify kingdoms and or compartments - any ASVs in the specified taxa/compartments will be kept. Secondly, for any marker, after taxonomic assignment ampliseq can filter *out* specified compartments and/or any arbitrary taxonomic levels using [`--exclude_taxa`](https://nf-co.re/ampliseq/parameters#exclude_taxa). Note that the default for `--exclude_taxa` removes mitochondrial sequences, so make sure that if no other filter is set, `"none"` is sepecified if running on COX1.
+Ampliseq has two ways to filter out ASVs from non-target taxa or genetic compartments. Firstly, for 16S and 18S only, ampliseq can use barrnap to check ASVs are in one or more taxa and/or compartments. Use [`--filter_ssu`](https://nf-co.re/ampliseq/parameters#filter_ssu) to specify kingdoms and or compartments - any ASVs in the specified taxa/compartments will be kept. Secondly, for any marker, after taxonomic assignment ampliseq can filter *out* specified compartments and/or any arbitrary taxonomic levels using [`--exclude_taxa`](https://nf-co.re/ampliseq/parameters#exclude_taxa). Note that the default for `--exclude_taxa` removes mitochondrial sequences, so make sure that if no other filter is set, `"none"` is specified if running on COX1.
 
 #### Quality and abundance filtering
 Our recommended quality filter (`--max_ee 1`) is strict, allowing on average no errors in a read. Conversely, our recommended abundance filter (`--min_frequency 1`) is relatively liberal, removing ASVs that only have a single read but allowing any other very rare ASVs to remain. The thinking here is that on inspecting the read tables, you can always further filter ASVs by abundance, and we strongly encourage this.
@@ -47,7 +47,7 @@ By default, these commands skip the majority of the downstream analysis that amp
 ```
 --skip_diversity_indices --skip_barplot --skip_alpha_rarefaction --skip_ancom
 ```
-The only only post processing done is taxonomic collapsing; however, if you don't want this, you could replace the above line with the following:
+The only post processing done is taxonomic collapsing; however, if you don't want this, you could replace the above line with the following:
 ```
 --skip_diversity_indices --skip_qiime --skip_ancom
 ```
