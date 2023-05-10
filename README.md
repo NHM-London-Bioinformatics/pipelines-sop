@@ -34,7 +34,13 @@ When you are ready to run a pipeline, we suggest the following:
 
 ## Queue selection and other configurations
 
-We have written a configuration file that optimises how nextflow runs on the NHM HPC, including dispatching jobs with Slurm. The main thing to remember is that this allows us to specify which Slurm queue to run with. For ampliseq, this is done by the user, and by default we use the `hour` queue but this is easily changed - see the [metabarcoding page](metabarcoding.md) for more information. For eager, this is done automatically by a secondary configuration file - see the [aDNA](ancientDNA.md) page for more information. Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow configs and profiles](configs.md) and the [singularity cache](singularity_cache.md)
+We have written a configuration file that optimises how nextflow runs on the NHM HPC, including dispatching jobs with Slurm. The main thing to remember is that this allows us to specify which Slurm queue to run with. When running any of these pipelines on the NHM HPC, you **must** make sure to include the NHM config file as follows:
+```
+ -c /mbl/share/workspaces/groups/nextflow/config/NHM.config
+ ```
+This is included in all of the example commands for the pipelines.
+
+For ampliseq, you then further select a queue by specifying the relevant profile - we suggest the `hour` queue but this is easily changed - see the [metabarcoding page](metabarcoding.md) for more information. For eager, this is done automatically by a secondary configuration file - see the [aDNA](ancientDNA.md) page for more information. Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow configs and profiles](configs.md) and the [singularity cache](singularity_cache.md)
 
 # Pipelines
 
