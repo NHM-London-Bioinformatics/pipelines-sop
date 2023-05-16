@@ -73,6 +73,7 @@ nextflow run nf-core/eager -r <version> \
   --input </path/to/samplesheet.tsv> \
   --genome <iGenomeID> \
   --mapper bwaaln \
+  --run_genotyping \
   --genotyping_tool 'ug' \
   --run_mtnucratio \
   --run_bcftools_stats \
@@ -82,6 +83,27 @@ nextflow run nf-core/eager -r <version> \
 Note: if you're running on humans, you may also want to add [`--run_sexdeterrmine`](https://nf-co.re/eager/parameters#human-sex-determination) and [`--run_nuclear_contamination`](https://nf-co.re/eager/parameters#human-sex-determination), both options only available with human sequencing. 
 
 ### Microbial or Organelle Genome
+Note that we haven't specifically tested eager with this sort of data, but this should be a good starting point.
+
+```
+nextflow run nf-core/eager -r <version> \
+  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
+  -c /mbl/share/workspaces/groups/nextflow/configs/eager.config \
+  -profile singularity \
+  -w work \
+  --outdir out \
+  --input </path/to/samplesheet.tsv> \
+  --genome <iGenomeID> \
+  --mapper bwaaln \
+  --run_genotyping \
+  --genotyping_tool 'ug' \
+  --run_bcftools_stats \
+  --run_multivcfanalyzer \
+  --email <you@nhm.ac.uk>
+```
+Note that MALT is also supported for taxonomic classification, see [here](https://nf-co.re/eager/parameters#metagenomic-screening)
+
+### Metagenomic Profiling
 Note that we haven't specifically tested eager with this sort of data, but this should be a good starting point.
 
 ```
