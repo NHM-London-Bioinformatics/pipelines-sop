@@ -59,7 +59,15 @@ The commands below follow the eager suggestions for mapping, namely they use the
 
 #### Genotyping
 
-The commands below use the default GATK UnifiedGenotyper ('ug') option for genotyping, but others are available. You can change the genotyper used, as well as configure the genotyper: check out [this section](https://nf-co.re/eager/parameters#genotyping) of the eager documentation.
+The commands below use the default GATK UnifiedGenotyper ('ug') option for genotyping, but others are available, check out [this section](https://nf-co.re/eager/parameters#genotyping) of the eager documentation. For GATK HaplotypeCaller, simply use `--genotyping_tool 'hc'` instead. For pileupcaller, you should use at least the following arguments:
+```
+  --genotyping_tool 'pileupcaller' \
+  --pileupcaller_bedfile </path/to/bedfile> \
+  --pileupcaller_snpfile </path/to/snpfile> \
+  --pileupcaller_method 'randomHaploid'
+```
+If you're familiar with pileupcaller, the [bedfile](https://nf-co.re/eager/2.4.7/parameters#pileupcaller_bedfile) is the file you'd pass to the `-l` argument in `samtools mpileup` and the [snpfile](https://nf-co.re/eager/2.4.7/parameters#pileupcaller_snpfile) is the file you'd pass to the `-f` argument in `pileupCaller`. While `randomHaploid` is the default for `--pileupcaller_method` this is so important to be right we think it should always state this.
+
 
 ### Eukaryotic Nuclear Genome
 
