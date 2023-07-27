@@ -2,10 +2,11 @@
 
 This repo comprises guidelines and Standard Operating Procedures for running [nf-core](https://nf-co.re/) nextflow bioinformatic pipelines on the NHM HPC cluster. It is designed to augment, not replace the comprehensive documentation available on the nf-core webpages for each pipeline. 
 
-These guidelines assume that you have:
-* Access to the NHM HPC and [Slurm Workload Manager](https://slurm.schedmd.com/documentation.html)
-* Basic familiarity with the Linux command-line interface
-* Basic familiarity with [conda](https://docs.conda.io/en/latest/)
+## Pre-requisites
+
+You will require access to the NHM HPC cluster to run these pipelines. Contact TS if you do not have access to an account on the HPC cluster (this is separate from franklin access)
+
+**Running these pipelines requires familiarity with the Linux command-line interface (CLI) and using text files in Linux**. It may also help to have basic familiarity with [conda](https://docs.conda.io/en/latest/) and with the [Slurm Workload Manager](https://slurm.schedmd.com/documentation.html). 
 
 # Getting started with nextflow and nf-core
 
@@ -29,7 +30,7 @@ When you are ready to run a pipeline, we suggest the following:
 * Always run a pipeline using `screen`. *Nextflow dispatches slurm jobs for you* while the main program continues running and reporting progress, but it can take from hours to days for a pipeline to complete so being able to close the screen and leave the pipeline running is invaluable.
 * Always specify a pipeline version (`-r`) when you run a pipeline. When you want to compare a new run to a previous dataset, use the same version as the previous dataset. Otherwise, we generally recommend running the most recent stable version: if you're not sure what that is, head to the documentation for that pipeline and it will say on the main page.
 * Always keep your own record of the exact command you run, so that you can replicate the analysis either with the same or new data.
-* All pipelines require a samplesheet in tab-separated values (TSV) text file (also known as tab delimited table). You can create this table and save it as TSV in [Microsoft Excel](https://smallbusiness.chron.com/make-txt-tab-delimited-35511.html), [LibreOffice Calc](https://ask.libreoffice.org/t/how-to-generate-calc-tab-delimited-output/14591) or [Google Sheets](https://support.google.com/merchants/answer/160569?hl=en-GB).
+* All pipelines require a samplesheet in tab-separated values (TSV) text file (also known as tab delimited table). You can create this table and save it as TSV in [Microsoft Excel](https://smallbusiness.chron.com/make-txt-tab-delimited-35511.html), [LibreOffice Calc](https://ask.libreoffice.org/t/how-to-generate-calc-tab-delimited-output/14591) or [Google Sheets](https://support.google.com/merchants/answer/160569?hl=en-GB). You may need to use the [`dos2unix`](https://linux.die.net/man/1/dos2unix) command on the Linux CLI to remove hidden formatting. 
 * We recommend using [absolute file paths](https://www.linuxfoundation.org/blog/blog/classic-sysadmin-absolute-path-vs-relative-path-in-linux-unix) throughout any nextflow command, including in the input samplesheet.
 
 ## Queue selection and other configurations
