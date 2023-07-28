@@ -41,7 +41,11 @@ We have written a configuration file that optimises how nextflow runs on the NHM
  ```
 This is included in all of the example commands for the pipelines.
 
-For ampliseq, you then further select a queue by specifying the relevant profile - we suggest the `hour` queue but this is easily changed - see the [metabarcoding page](metabarcoding.md) for more information. For eager, this is done automatically by a secondary configuration file - see the [aDNA](ancientDNA.md) page for more information. Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow configs and profiles](configs.md) and the [singularity cache](singularity_cache.md)
+This config file creates a set of default profiles that instruct the pipeline to dispatch all jobs to a specific slurm queue. For pipelines that use this default approach (i.e. ampliseq), all you need to know is that by default, the example commands use the `genericcpuhour` profile, dispatching jobs to CPU nodes on the `hour` queue. If your dataset is large and the pipeline needs more time, you can change to the `day`, `week` or `month` queue by just swapping out `genericcpuhour` for `genericcpuday`, etc. 
+
+For eager, queue selection is instead done automatically by a secondary configuration file - see the [aDNA](ancientDNA.md) page for more information. Dispatching to `genericcpuhour` or equivalent profiles is not recommended.
+
+Otherwise, you don't need to understand profiles and caching to get started, but if you want to learn more you can see the documentation for the [NHM nextflow configs and profiles](configs.md) and the [singularity cache](singularity_cache.md)
 
 # Pipelines
 
