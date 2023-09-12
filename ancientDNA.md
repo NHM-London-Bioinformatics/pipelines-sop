@@ -29,7 +29,7 @@ Finally, ensure you have the following information for each library
 
 If you have raw demultiplexed reads files, you should know the paths for these fastq files. Alternatively, if you've already mapped against your reference, you can use BAM files as your input, and you should know the paths to these files. 
 
-Once you have all of the above information, you need to prepare a samplesheet. See the [eager samplesheet documentation](https://nf-co.re/eager/usage#tsv-input-method) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file. Note that if you have a single library, or a set of libraries all prepared the same way, you could use the the direct input method, but we don't recommend it - a samplesheet keeps a better record and simplifies the input command.
+Once you have all of the above information, you need to prepare a samplesheet. See the [eager samplesheet documentation](https://nf-co.re/eager/usage#tsv-input-method) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file. Note that if you have a single library, or a set of libraries all prepared the same way, you _could_ use the the direct input method, but we strongly recommend against it - this can sometimes cause bugs, plus a samplesheet keeps a better record and simplifies the input command.
 
 If you're doing Metagenomic Profiling, you will also need a Kraken or Malt database for classification, and know the path to this. This is supplied as its own argument.
 
