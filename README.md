@@ -20,7 +20,7 @@ We recommend installing nextflow using conda, and doing so in its own environmen
 ```
 conda create -n nextflow -c bioconda nextflow
 ```
-Note that if you intend to use `eager` for Ancient DNA analysis, this requires a slightly older version of nextflow, so you should instead run
+Note that if you intend to use eager for Ancient DNA analysis, this requires a slightly older version of nextflow, so you should instead run:
 ```
 conda create -n nextflow -c bioconda nextflow=22.10.6
 ```
