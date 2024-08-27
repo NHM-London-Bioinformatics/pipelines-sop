@@ -64,4 +64,4 @@ We have extensively tested the [nf-core eager](https://nf-co.re/eager) pipeline 
 
 ## Genome Skimming
 
-We are in the process of developing a new nf-core pipeline, called [genomeskim](https://nf-co.re/genomeskim). Watch this space.
+We have developed a new nf-core pipeline, called [nf-core genomeskim](https://nf-co.re/genomeskim) for organelle assembly and genome statistics from genome skims. [Click here](genomeskim.md) to read our guide to running genomeskim on the NHM HPC.
