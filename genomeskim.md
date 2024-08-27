@@ -48,116 +48,62 @@ The pipeline can combine any of the GetOrganelle default, File, or Fetched refer
 
 genomeskim performs annotation of any contigs; currently, only mitochondrial sequences are supported using MITOS. You must specify the genetic code and the database to use for annotation. This step can be skipped using `--skip_annotation`, which currently should be used for non-mitochondrial organelles.
 
+## Example commands
 
-### 16S
+This is an example command for running the pipeline on a set of insect samples using the default GetOrganelle databases:
 
-```
-nextflow run nf-core/ampliseq -r <version> \
+```bash
+nextflow run nf-core/genomeskim -r <version> \
   -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "silva=138" \
-  --cut_dada_ref_taxonomy \
-  --exclude_taxa "mitochondria,chloroplast" \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
+  -profile singularity,genericcpuday \
+  --input samplesheet.csv \
+  --outdir genomeskimout/ \
+  --getorganelle_genometype animal_mt \
+  --mitos_geneticcode 5 \
+  --mitos_refdbid refseq89m \
+  --blastdbpath /mbl/share/workspaces/groups/database/nt-2024-05-29_blastdb/ \
+  --taxdumppath /mbl/share/workspaces/groups/database/taxdump-2024-08-12/
 ```
+The user has specified the genetic code for insect mitochondria (5), one of the six available reference databases for MITOS annotation, and paths to the local copies of NCBI nt and taxdump on the HPC. 
 
-Notes:
-* Add `--filter_ssu "bac"` if you're only interested in bacteria, or `--filter_ssu "bac,arc"` for bacteria and archaea. See [above](#taxonomic-and-location-filtering)
-
-### 18S
-
-```
-nextflow run nf-core/ampliseq -r <version> \
+This is a different example command for running the pipeline on a set of plant samples using GoFetch to retrieve reference sequences and combine these with the default GetOrganelle databases:
+```bash
+nextflow run nf-core/genomeskim -r <version> \
   -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "pr2=4.14.0" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
+  -profile singularity,genericcpuday \
+  --outdir genomeskimout/ \
+  --getorganelle_genometype embplant_pt \
+  --gofetch_taxon Arabidopsis \
+  --gofetch_target chloroplast \
+  --gofetch_entrezemail dr.plant@nhm.ac.uk \
+  --getorganelle_ref_action add_both \
+  --skip_annotation \
+  --blastdbpath /mbl/share/workspaces/groups/database/nt-2024-05-29_blastdb/ \
+  --taxdumppath /mbl/share/workspaces/groups/database/taxdump-2024-08-12/
 ```
+The user has skipped annotation as chloroplast annotation is not currently available, and supplied paths to the local copies of NCBI nt and taxdump on the HPC.
 
-### ITS
-
-```
-nextflow run nf-core/ampliseq -r <version> \
+Here's a final example command for running the pipeline on a set of fungal samples, supplying a genbank flat file comprising reference sequences - by default these will be used instead of the default GetOrganelle databases:
+```bash
+nextflow run nf-core/genomeskim -r <version> \
   -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --illumina_pe_its \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --cut_its <"full"/"its1"/"its2"> \
-  --min_frequency 2 \
-  --dada_ref_taxonomy "unite-alleuk=8.3" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
+  -profile singularity,genericcpuday \
+  --outdir genomeskimout/ \
+  --getorganelle_genometype  fungus_mt\
+  --organellrefs psilocybe_refs.gb \
+  --mitos_geneticcode 4 \
+  --mitos_refdbid refseq63f \
+  --blastdbpath custom_hymenogastraceae_db/ \
+  --taxdumppath /mbl/share/workspaces/groups/database/taxdump-2024-08-12/
 ```
-
-Note: we recommend using `--cut_its` for ITS, which runs ITSx on your ASVS, filtering out non-ITS sequences and optionally retaining only parts of the ITS regions. If your primers amplify only ITS1 or ITS2, specifying "its1" or "its2" respectively will return only those regions, trimming off other sequence data. If you use "full", ITSx will be run and filter out non-ITS sequences, but no trimming will be run.
-
-### COX1
-
-```
-nextflow run nf-core/ampliseq -r <version> \
-  -c /mbl/share/workspaces/groups/nextflow/config/NHM.config \
-  -profile genericcpuhour,singularity \
-  -w work \
-  --outdir out \
-  --input </path/to/samplesheet.tsv> \
-  --illumina_pe_its \
-  --FW_primer <FORSEQ> \
-  --RV_primer <REVSEQ> \
-  --cutadapt_min_overlap 3 \
-  --trunclenf <FTRUNC> \
-  --trunclenr <RTRUNC> \
-  --max_ee 1 \
-  --min_frequency 2 \
-  --min_len_asv <MINEXPLENGTH> \
-  --max_len_asv <MAXEXPLENGTH> \
-  --dada_ref_taxonomy "midori2-co1" \
-  --cut_dada_ref_taxonomy \
-  --skip_diversity_indices --skip_ancom --skip_barplot --skip_alpha_rarefaction \
-  --email <you@nhm.ac.uk>
-```
-
-Note: as COX1 is a protein-coding gene, we can apply a strict length filter (`--min_len_asv`, `--max_len_asv`) as we don't expect valid ASVs to vary much. Note that you may wish to apply further filtering not currently available in ampliseq, such as translation filtering and removal of out-of-frame length variants. 
+The user has skipped annotation as chloroplast annotation is not currently available. In this case they've used a custom BLAST database for validation - note that they've still used the HPC version of taxdump, there's no need to create a custom version of this.
 
 ## Outputs
 
-For complete documentation of all the outputs, see [here](https://nf-co.re/ampliseq/output). Here is a highlight set of outputs
+For complete documentation of all the outputs, see [here](https://nf-co.re/genomeskim/output). Here is a highlight set of outputs
 
 * QC reports are in `multiqc/multiqc_report.html`
-* ASVs (before `--exclude_taxa`) are in `dada2/ASV_seqs.fasta`
-* Taxonomy with species is in `dada2/ASV_tax_species.tsv`
-* Raw read counts are in `dada2/DADA2_table.tsv`
-* Taxonomic filtered ASVs are in `qiime2/representative_sequences/rep-seq.fasta`
-* Taxnomically collapsed read count tables are in `qiime2/abundance_tables/`
-
+* Contigs are in `getorganelle/<sample>/*path_sequence.fasta`
+* Annotations are in `annotations/<sample>*`
+* Validation results are in `validation/<sample>_summary.tsv`
+* Genome statistics are in `genomestats/<sample>*`
