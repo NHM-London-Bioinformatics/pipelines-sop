@@ -12,7 +12,7 @@ The following is a checklist of information you should know before running ampli
 2. The length of your reads (e.g. 300bp, 250bp, etc)
 3. The location of your demultiplexed reads files. Each pair of files should correspond to a single sample or replicate.
 
-Once you have these, you need to prepare a samplesheet. See the [ampliseq samplesheet documentation](https://nf-co.re/ampliseq/usage#samplesheet-input) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file.
+Once you have these, you need to prepare a samplesheet. See the [ampliseq samplesheet documentation](https://nf-co.re/ampliseq/usage#samplesheet-input) for the columns that are required in your table, and don't forget to use absolute file paths and save it as a tab-separated values file. Ampliseq has an example samplesheet [here](https://raw.githubusercontent.com/nf-core/ampliseq/2.11.0/assets/samplesheet.tsv)
 
 ## Commands
 
